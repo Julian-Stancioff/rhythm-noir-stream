@@ -49,8 +49,9 @@ export const Library: React.FC = () => {
 
   const handleSongSelect = (song: Song) => {
     setCurrentSong(song);
-    // Navigate to now playing screen
-    window.location.href = '/now-playing';
+    // Navigate to homepage with song data
+    const songData = encodeURIComponent(JSON.stringify(song));
+    window.location.href = `/?song=${songData}`;
   };
 
   return (

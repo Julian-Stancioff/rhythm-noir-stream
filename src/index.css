@@ -138,3 +138,39 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes scroll-text {
+    0% { transform: translateX(100%); }
+    20% { transform: translateX(0); }
+    80% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .animate-scroll-text {
+    animation: scroll-text 8s linear infinite;
+  }
+
+  /* Gradient utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-background {
+    background: var(--gradient-background);
+  }
+
+  .bg-gradient-subtle {
+    background: var(--gradient-card);
+  }
+
+  /* Shadow utilities */
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-elegant {
+    box-shadow: var(--shadow-card);
+  }
+}

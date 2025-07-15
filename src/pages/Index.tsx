@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Plus, Clock, Music, Shuffle, Repeat } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
+import waveformLogo from '../assets/waveform-logo.png';
 
 interface Song {
   id: string;
@@ -81,11 +82,15 @@ const Index: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-8">
           <div className="text-center space-y-6">
-            <div className="w-48 h-48 mx-auto bg-gradient-subtle rounded-2xl shadow-elegant flex items-center justify-center">
-              <Music className="w-16 h-16 text-muted-foreground" />
+            <div className="w-48 h-48 mx-auto flex items-center justify-center">
+              <img 
+                src={waveformLogo} 
+                alt="House Share Waveform" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Rhythm Noir</h1>
+              <h1 className="text-3xl font-bold text-foreground mb-2">House Share</h1>
               <p className="text-muted-foreground">Your personal music streaming hub</p>
             </div>
             <div className="flex gap-4 justify-center">

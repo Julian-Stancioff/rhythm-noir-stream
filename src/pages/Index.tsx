@@ -76,7 +76,7 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background pb-24">
+    <div className="min-h-screen bg-gradient-background pb-32">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="px-6 py-8">

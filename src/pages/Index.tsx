@@ -81,8 +81,8 @@ const Index: React.FC = () => {
     <div className="min-h-screen bg-gradient-background pb-32">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="px-6 pt-2 pb-4">
-          <div className="text-center space-y-2">
+        <div className="px-6 pt-0 pb-2">
+          <div className="text-center space-y-1">
             <div className="w-full h-80 mx-auto flex items-end justify-center px-8" style={{ backgroundColor: 'transparent' }}>
               {Array.from({ length: 40 }, (_, index) => (
                 <WaveformBar key={index} index={index} />

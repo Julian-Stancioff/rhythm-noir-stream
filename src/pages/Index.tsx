@@ -78,95 +78,33 @@ const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-background pb-20">
       <div className="max-w-md mx-auto">
-        {/* Now Playing Section */}
+        {/* Header */}
         <div className="px-6 py-8">
-          {currentSong ? (
-            <div className="space-y-8">
-              {/* Song Info */}
-              <div className="text-center space-y-4">
-                <div className="w-64 h-64 mx-auto bg-gradient-subtle rounded-2xl shadow-elegant flex items-center justify-center">
-                  <Music className="w-24 h-24 text-muted-foreground" />
-                </div>
-                
-                {/* Scrolling Title */}
-                <div className="overflow-hidden w-full">
-                  <h1 className={`text-2xl font-bold text-foreground whitespace-nowrap ${
-                    currentSong.title.length > 20 ? 'animate-scroll-text' : 'text-center'
-                  }`}>
-                    {currentSong.title}
-                  </h1>
-                </div>
-              </div>
-
-              {/* Waveform */}
-              <div className="flex items-center justify-center space-x-1 h-16 px-4">
-                {Array.from({ length: 40 }, (_, i) => (
-                  <WaveformBar key={i} index={i} />
-                ))}
-              </div>
-
-              {/* Progress Bar */}
-              <div className="px-4">
-                <div className="w-full bg-muted rounded-full h-1">
-                  <div 
-                    className="bg-gradient-primary h-1 rounded-full transition-all duration-300"
-                    style={{ width: isPlaying ? '35%' : '0%' }}
-                  />
-                </div>
-                <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                  <span>1:23</span>
-                  <span>{formatTime(currentSong.duration)}</span>
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-center space-x-6">
-                <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
-                  <Shuffle className="w-6 h-6" />
-                </button>
-                <button className="p-3 text-foreground hover:scale-105 transition-transform">
-                  <SkipBack className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={handlePlayPause}
-                  className="p-4 bg-gradient-primary text-primary-foreground rounded-full shadow-glow hover:scale-105 transition-all duration-200"
-                >
-                  {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
-                </button>
-                <button className="p-3 text-foreground hover:scale-105 transition-transform">
-                  <SkipForward className="w-6 h-6" />
-                </button>
-                <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
-                  <Repeat className="w-6 h-6" />
-                </button>
-              </div>
-
-              {/* Queue Button */}
-              <div className="flex justify-center">
-                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-                  <Clock className="w-5 h-5" />
-                </button>
-              </div>
+          <div className="text-center space-y-6">
+            <div className="w-48 h-48 mx-auto bg-gradient-subtle rounded-2xl shadow-elegant flex items-center justify-center">
+              <Music className="w-16 h-16 text-muted-foreground" />
             </div>
-          ) : (
-            // Placeholder State
-            <div className="text-center space-y-6 py-12">
-              <div className="w-48 h-48 mx-auto bg-gradient-subtle rounded-2xl shadow-elegant flex items-center justify-center">
-                <Music className="w-16 h-16 text-muted-foreground" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-foreground mb-2">Ready to Play</h2>
-                <p className="text-muted-foreground">Select a song from your library to start listening</p>
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Rhythm Noir</h1>
+              <p className="text-muted-foreground">Your personal music streaming hub</p>
+            </div>
+            <div className="flex gap-4 justify-center">
               <Link
                 to="/library"
-                className="inline-flex items-center px-6 py-3 bg-gradient-primary text-primary-foreground rounded-xl shadow-glow hover:scale-105 transition-all duration-200 font-medium"
+                className="flex items-center px-6 py-3 bg-gradient-primary text-primary-foreground rounded-xl shadow-glow hover:scale-105 transition-all duration-200 font-medium"
               >
                 <Music className="w-5 h-5 mr-2" />
                 Browse Library
               </Link>
+              <Link
+                to="/upload"
+                className="flex items-center px-6 py-3 bg-card border border-border text-foreground rounded-xl hover:scale-105 transition-all duration-200 font-medium"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Upload
+              </Link>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Playlists Section */}

@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Music, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SongCard } from '@/components/SongCard';
+import { useMusicContext } from '../contexts/MusicContext';
 
 interface Song {
   id: string;
@@ -24,12 +25,11 @@ export const PlaylistEditor: React.FC = () => {
   const navigate = useNavigate();
   const { playlistId } = useParams();
   const location = useLocation();
+  const { currentSong, isPlaying, setCurrentSong, setIsPlaying } = useMusicContext();
   const isNewPlaylist = !playlistId;
   
   const [playlistName, setPlaylistName] = useState('');
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (location.state?.addedSongs) {
@@ -113,9 +113,9 @@ export const PlaylistEditor: React.FC = () => {
 
   const handleSongSelect = (song: Song) => {
     setCurrentSong(song);
-    // Navigate to homepage with song data
-    const songData = encodeURIComponent(JSON.stringify(song));
-    navigate(`/?song=${songData}`);
+    setIsPlaying(true);
+    // Navigate to now-playing
+    navigate('/now-playing');
   };
 
   const formatDuration = (seconds: number) => {

@@ -1,155 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, Heart, Share, MoreHorizontal } from 'lucide-react';
-import { ProgressBar } from '@/components/ProgressBar';
-import { PlayerControls } from '@/components/PlayerControls';
+import React from 'react';
+import { Play, Pause, SkipBack, SkipForward, Clock, Music, Shuffle, Repeat, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  duration: number;
-  artwork?: string;
-}
+import { useMusicContext } from '../contexts/MusicContext';
+import { Button } from '@/components/ui/button';
 
 export const NowPlaying: React.FC = () => {
   const navigate = useNavigate();
-  const [currentTime, setCurrentTime] = useState(45);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isLiked, setIsLiked] = useState(false);
-  
-  // Mock current song
-  const currentSong: Song = {
-    id: '1',
-    title: 'Midnight Dreams',
-    artist: 'Luna Waves',
-    duration: 245
-  };
-
-  // Simulate time progression
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => {
-          if (prev >= currentSong.duration) {
-            setIsPlaying(false);
-            return currentSong.duration;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentSong.duration]);
-
-  const handleSeek = (time: number) => {
-    setCurrentTime(time);
-  };
+  const { currentSong, isPlaying, setIsPlaying } = useMusicContext();
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handlePrevious = () => {
-    // Navigate to previous song
-    console.log('Previous song');
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleNext = () => {
-    // Navigate to next song
-    console.log('Next song');
+  // Dynamic waveform bars
+  const WaveformBar = ({ index }: { index: number }) => {
+    const delay = index * 0.1;
+    const height = Math.random() * 40 + 10;
+    
+    return (
+      <div
+        className={`bg-gradient-primary rounded-full transition-all duration-300 ${
+          isPlaying ? 'animate-pulse shadow-glow' : ''
+        }`}
+        style={{
+          width: '4px',
+          height: `${height}px`,
+          animationDelay: `${delay}s`,
+          filter: isPlaying ? 'drop-shadow(0 0 8px hsl(var(--primary)))' : 'none'
+        }}
+      />
+    );
   };
+
+  if (!currentSong) {
+    return (
+      <div className="min-h-screen bg-gradient-background pb-20 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+            <Music className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">No song playing</h2>
+            <p className="text-muted-foreground">Select a song from your library to start listening</p>
+          </div>
+          <Button
+            onClick={() => navigate('/library')}
+            className="bg-gradient-primary text-primary-foreground"
+          >
+            <Music className="w-5 h-5 mr-2" />
+            Browse Library
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-background flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 pb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-lg text-foreground hover:bg-muted/50 
-                   transition-all duration-200"
-        >
-          <ChevronDown className="w-6 h-6" />
-        </button>
-        
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Now Playing</p>
-        </div>
-        
-        <button className="p-2 rounded-lg text-foreground hover:bg-muted/50 
-                         transition-all duration-200">
-          <MoreHorizontal className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Artwork */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="w-80 h-80 bg-gradient-primary rounded-3xl shadow-glow mb-8 
-                      overflow-hidden animate-scale-in">
-          {currentSong.artwork ? (
-            <img 
-              src={currentSong.artwork} 
-              alt={currentSong.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-6xl">
-                {currentSong.title.charAt(0).toUpperCase()}
-              </span>
+    <div className="min-h-screen bg-gradient-background pb-20">
+      <div className="max-w-md mx-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border z-40">
+          <div className="p-6">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(-1)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <h1 className="text-xl font-bold text-foreground">Now Playing</h1>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Progress Bar - Main Focus */}
-        <div className="w-full max-w-sm mb-8">
-          <ProgressBar
-            currentTime={currentTime}
-            duration={currentSong.duration}
-            onSeek={handleSeek}
-          />
-        </div>
+        {/* Now Playing Section */}
+        <div className="px-6 py-8">
+          <div className="space-y-8">
+            {/* Song Info */}
+            <div className="text-center space-y-4">
+              <div className="w-64 h-64 mx-auto bg-gradient-subtle rounded-2xl shadow-elegant flex items-center justify-center">
+                <Music className="w-24 h-24 text-muted-foreground" />
+              </div>
+              
+              {/* Scrolling Title */}
+              <div className="overflow-hidden w-full">
+                <h1 className={`text-2xl font-bold text-foreground whitespace-nowrap ${
+                  currentSong.title.length > 20 ? 'animate-scroll-text' : 'text-center'
+                }`}>
+                  {currentSong.title}
+                </h1>
+                <p className="text-lg text-muted-foreground mt-1">{currentSong.artist}</p>
+              </div>
+            </div>
 
-        {/* Song Info - Below Progress */}
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-2xl font-bold text-foreground mb-2">
-            {currentSong.title}
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            {currentSong.artist}
-          </p>
-        </div>
+            {/* Waveform */}
+            <div className="flex items-center justify-center space-x-1 h-16 px-4">
+              {Array.from({ length: 40 }, (_, i) => (
+                <WaveformBar key={i} index={i} />
+              ))}
+            </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-6 mb-8">
-          <button
-            onClick={() => setIsLiked(!isLiked)}
-            className={`p-3 rounded-xl transition-all duration-200 hover:scale-105
-                      ${isLiked 
-                        ? 'text-primary bg-primary/20 shadow-glow' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-          >
-            <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
-          </button>
-          
-          <button className="p-3 rounded-xl text-muted-foreground hover:text-foreground 
-                           hover:bg-muted/50 transition-all duration-200 hover:scale-105">
-            <Share className="w-6 h-6" />
-          </button>
-        </div>
+            {/* Progress Bar */}
+            <div className="px-4">
+              <div className="w-full bg-muted rounded-full h-1">
+                <div 
+                  className="bg-gradient-primary h-1 rounded-full transition-all duration-300"
+                  style={{ width: isPlaying ? '35%' : '0%' }}
+                />
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                <span>1:23</span>
+                <span>{formatTime(currentSong.duration)}</span>
+              </div>
+            </div>
 
-        {/* Player Controls */}
-        <PlayerControls
-          isPlaying={isPlaying}
-          onPlayPause={handlePlayPause}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          onShuffle={() => console.log('Shuffle')}
-          onRepeat={() => console.log('Repeat')}
-          className="mb-8"
-        />
+            {/* Controls */}
+            <div className="flex items-center justify-center space-x-6">
+              <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
+                <Shuffle className="w-6 h-6" />
+              </button>
+              <button className="p-3 text-foreground hover:scale-105 transition-transform">
+                <SkipBack className="w-6 h-6" />
+              </button>
+              <button
+                onClick={handlePlayPause}
+                className="p-4 bg-gradient-primary text-primary-foreground rounded-full shadow-glow hover:scale-105 transition-all duration-200"
+              >
+                {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+              </button>
+              <button className="p-3 text-foreground hover:scale-105 transition-transform">
+                <SkipForward className="w-6 h-6" />
+              </button>
+              <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
+                <Repeat className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Queue Button */}
+            <div className="flex justify-center">
+              <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+                <Clock className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

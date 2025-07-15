@@ -176,4 +176,9 @@
   .shadow-elegant {
     box-shadow: var(--shadow-card);
   }
+
+  /* iOS safe area support */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

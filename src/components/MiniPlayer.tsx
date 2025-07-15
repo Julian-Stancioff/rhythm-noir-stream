@@ -10,12 +10,12 @@ export const MiniPlayer: React.FC = () => {
   if (!currentSong) return null;
 
   const handleNavigateToPlayer = () => {
-    navigate('/');
+    navigate('/now-playing');
   };
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-40">
-      <div className="flex items-center px-4 py-2 max-w-screen-sm mx-auto">
+    <div className="fixed bottom-16 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 safe-area-inset-bottom">
+      <div className="flex items-center px-4 py-3 max-w-screen-sm mx-auto">
         {/* Song Info - Clickable area */}
         <div 
           className="flex-1 cursor-pointer overflow-hidden mr-3"

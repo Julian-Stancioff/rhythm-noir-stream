@@ -67,8 +67,8 @@ export const Library: React.FC = () => {
     } else {
       setCurrentSong(song);
       setIsPlaying(true);
-      // Navigate to homepage
-      navigate('/');
+      // Navigate to now-playing
+      navigate('/now-playing');
     }
   };
 

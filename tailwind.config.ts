@@ -150,6 +150,20 @@ export default {
 					'50%': {
 						boxShadow: '0 0 30px hsl(var(--primary) / 0.6)'
 					}
+				},
+				'scroll-title': {
+					'0%': {
+						transform: 'translateX(100%)'
+					},
+					'20%': {
+						transform: 'translateX(0%)'
+					},
+					'80%': {
+						transform: 'translateX(0%)'
+					},
+					'100%': {
+						transform: 'translateX(-100%)'
+					}
 				}
 			},
 			animation: {

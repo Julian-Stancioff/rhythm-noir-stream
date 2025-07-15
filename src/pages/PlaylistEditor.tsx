@@ -106,7 +106,6 @@ export const PlaylistEditor: React.FC = () => {
     if (playlist && playlist.songs.length > 0) {
       setCurrentSong(playlist.songs[0]);
       setIsPlaying(true);
-      navigate('/now-playing');
     }
   };
 

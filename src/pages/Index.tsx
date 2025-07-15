@@ -58,12 +58,12 @@ const Index: React.FC = () => {
 
   // Dynamic waveform bars for homepage
   const WaveformBar = ({ index }: { index: number }) => {
-    const delay = index * 0.05;
-    const height = Math.random() * 120 + 20; // Larger height range for homepage
+    const delay = index * 0.2;
+    const height = Math.random() * 160 + 40; // Larger height range for homepage
     
     return (
       <div
-        className={`bg-gradient-primary rounded-full transition-all duration-500 animate-pulse shadow-glow flex-1 max-w-2`}
+        className={`bg-gradient-primary rounded-full transition-all duration-[3000ms] animate-pulse shadow-glow flex-1 max-w-4`}
         style={{
           height: `${height}px`,
           animationDelay: `${delay}s`,
@@ -79,8 +79,8 @@ const Index: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-8">
           <div className="text-center space-y-6">
-            <div className="w-full h-64 mx-auto flex items-center justify-center gap-1 px-8">
-              {Array.from({ length: 60 }, (_, index) => (
+            <div className="w-full h-80 mx-auto flex items-center justify-center gap-2 px-8">
+              {Array.from({ length: 40 }, (_, index) => (
                 <WaveformBar key={index} index={index} />
               ))}
             </div>

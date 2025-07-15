@@ -1,10 +1,10 @@
 import React from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
 
 export const MiniPlayer: React.FC = () => {
-  const { currentSong, isPlaying, playPause } = useMusicContext();
+  const { currentSong, isPlaying, playPause, skipToNext, skipToPrevious } = useMusicContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,20 +29,42 @@ export const MiniPlayer: React.FC = () => {
           </div>
         </div>
 
-        {/* Play/Pause Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            playPause();
-          }}
-          className="p-2 bg-primary text-primary-foreground rounded-full hover:scale-105 transition-all duration-200 shadow-glow"
-        >
-          {isPlaying ? (
-            <Pause className="w-4 h-4" />
-          ) : (
-            <Play className="w-4 h-4" />
-          )}
-        </button>
+        {/* Control Buttons */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              skipToPrevious();
+            }}
+            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <SkipBack className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              playPause();
+            }}
+            className="p-2 bg-primary text-primary-foreground rounded-full hover:scale-105 transition-all duration-200 shadow-glow"
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              skipToNext();
+            }}
+            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <SkipForward className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );

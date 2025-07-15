@@ -63,12 +63,13 @@ const Index: React.FC = () => {
     
     return (
       <div
-        className="bg-primary rounded-full transition-all duration-[3000ms] animate-pulse shadow-glow"
+        className="rounded-full transition-all duration-[3000ms] animate-pulse"
         style={{
           width: '8px',
           height: `${height}px`,
+          backgroundColor: '#ff6b35',
           animationDelay: `${delay}s`,
-          filter: 'drop-shadow(0 0 8px hsl(var(--primary)))'
+          boxShadow: '0 0 8px #ff6b35'
         }}
       />
     );

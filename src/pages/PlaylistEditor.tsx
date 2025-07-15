@@ -128,7 +128,7 @@ export const PlaylistEditor: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background pb-20">
+    <div className="min-h-screen bg-gradient-background pb-24">
       {/* Header */}
       <div className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border z-40">
         <div className="p-6">

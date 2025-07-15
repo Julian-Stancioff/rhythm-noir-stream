@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Plus, Clock, Music, Shuffle, Repeat } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useMusicContext } from '../contexts/MusicContext';
 
 interface Song {
   id: string;
@@ -23,26 +24,9 @@ const mockPlaylists: Playlist[] = [];
 const Index: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { currentSong, isPlaying, setCurrentSong, setIsPlaying } = useMusicContext();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
-  // Check if a song was passed from the library
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const songData = searchParams.get('song');
-    if (songData) {
-      try {
-        const song = JSON.parse(decodeURIComponent(songData));
-        setCurrentSong(song);
-        setIsPlaying(true);
-        // Clean up URL
-        window.history.replaceState({}, '', '/');
-      } catch (error) {
-        console.error('Error parsing song data:', error);
-      }
-    }
-  }, [location]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);

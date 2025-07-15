@@ -4,6 +4,7 @@ import { SongCard } from '@/components/SongCard';
 import { Music, Plus, Check, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useMusicContext } from '../contexts/MusicContext';
 
 interface Song {
   id: string;
@@ -28,9 +29,8 @@ const mockSongs: Song[] = [
 export const Library: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentSong, isPlaying, setCurrentSong, setIsPlaying } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState<Set<string>>(new Set());
   
   const isSelectionMode = location.state?.selectionMode || false;
@@ -66,9 +66,9 @@ export const Library: React.FC = () => {
       setSelectedSongs(newSelected);
     } else {
       setCurrentSong(song);
-      // Navigate to homepage with song data
-      const songData = encodeURIComponent(JSON.stringify(song));
-      navigate(`/?song=${songData}`);
+      setIsPlaying(true);
+      // Navigate to homepage
+      navigate('/');
     }
   };
 

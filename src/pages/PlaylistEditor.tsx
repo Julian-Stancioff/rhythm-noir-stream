@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, Plus, Music, Clock } from 'lucide-react';
+import { ArrowLeft, Plus, Music, Clock, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SongCard } from '@/components/SongCard';
@@ -102,6 +102,14 @@ export const PlaylistEditor: React.FC = () => {
     });
   };
 
+  const handlePlayPlaylist = () => {
+    if (playlist && playlist.songs.length > 0) {
+      setCurrentSong(playlist.songs[0]);
+      setIsPlaying(true);
+      navigate('/now-playing');
+    }
+  };
+
   const handlePlayPause = (song: Song) => {
     if (currentSong?.id === song.id) {
       setIsPlaying(!isPlaying);
@@ -169,13 +177,24 @@ export const PlaylistEditor: React.FC = () => {
                 <span>{playlist.songs.length} songs</span>
                 <span>{formatDuration(playlist.totalDuration)}</span>
               </div>
-              <Button
-                onClick={handleAddSongs}
-                className="flex items-center gap-2 bg-gradient-primary text-primary-foreground"
-              >
-                <Plus className="w-4 h-4" />
-                Add Songs
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handlePlayPlaylist}
+                  disabled={playlist.songs.length === 0}
+                  className="flex items-center gap-2 bg-gradient-primary text-primary-foreground"
+                >
+                  <Play className="w-4 h-4" />
+                  Play
+                </Button>
+                <Button
+                  onClick={handleAddSongs}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Songs
+                </Button>
+              </div>
             </div>
           )}
         </div>

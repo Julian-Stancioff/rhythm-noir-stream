@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Music, Repeat, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
@@ -6,10 +6,23 @@ import { Button } from '@/components/ui/button';
 
 export const NowPlaying: React.FC = () => {
   const navigate = useNavigate();
-  const { currentSong, isPlaying, setIsPlaying, skipToNext, skipToPrevious } = useMusicContext();
+  const { currentSong, isPlaying, setIsPlaying, skipToNext, skipToPrevious, playContext } = useMusicContext();
+  const [showQueue, setShowQueue] = useState(false);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
+  };
+
+  const toggleQueue = () => {
+    setShowQueue(!showQueue);
+  };
+
+  const getUpcomingSongs = () => {
+    if (!playContext || !currentSong) return [];
+    
+    const currentIndex = playContext.currentIndex;
+    const nextSongs = playContext.songs.slice(currentIndex + 1, currentIndex + 6);
+    return nextSongs;
   };
 
   const formatTime = (seconds: number) => {
@@ -139,11 +152,36 @@ export const NowPlaying: React.FC = () => {
               </button>
             </div>
 
-            {/* Repeat Button */}
-            <div className="flex justify-center">
-              <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+            {/* Repeat/Queue Button */}
+            <div className="flex flex-col items-center">
+              <button 
+                onClick={toggleQueue}
+                className={`p-2 transition-colors ${showQueue ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+              >
                 <Repeat className="w-5 h-5" />
               </button>
+              
+              {/* Queue Display */}
+              {showQueue && (
+                <div className="mt-4 w-full max-w-sm bg-card/80 backdrop-blur-sm rounded-lg border border-border p-4">
+                  <h3 className="text-sm font-medium text-foreground mb-3">Up Next</h3>
+                  {getUpcomingSongs().length > 0 ? (
+                    <div className="space-y-2">
+                      {getUpcomingSongs().map((song, index) => (
+                        <div key={song.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                          <span className="text-xs text-muted-foreground w-4">{index + 1}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate">{song.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{song.artist}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground text-center py-4">No upcoming songs</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -58,13 +58,14 @@ const Index: React.FC = () => {
 
   // Dynamic waveform bars for homepage
   const WaveformBar = ({ index }: { index: number }) => {
-    const delay = index * 0.2;
-    const height = Math.random() * 160 + 40; // Larger height range for homepage
+    const delay = index * 0.3;
+    const height = Math.random() * 160 + 40;
     
     return (
       <div
-        className={`bg-gradient-primary rounded-full transition-all duration-[3000ms] animate-pulse shadow-glow flex-1 max-w-4`}
+        className="bg-primary rounded-full transition-all duration-[3000ms] animate-pulse shadow-glow"
         style={{
+          width: '8px',
           height: `${height}px`,
           animationDelay: `${delay}s`,
           filter: 'drop-shadow(0 0 8px hsl(var(--primary)))'

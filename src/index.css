@@ -151,8 +151,17 @@
     100% { transform: translateX(-100%); }
   }
 
+  @keyframes scroll-seamless {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-150%); }
+  }
+
   .animate-scroll-text {
     animation: scroll-text 8s linear infinite;
+  }
+
+  .animate-scroll-seamless {
+    animation: scroll-seamless 12s linear infinite;
   }
 
   /* Gradient utilities */

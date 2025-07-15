@@ -22,9 +22,7 @@ export const MiniPlayer: React.FC = () => {
           onClick={handleNavigateToPlayer}
         >
           <div className="overflow-hidden">
-            <p className={`text-sm font-medium text-foreground whitespace-nowrap ${
-              currentSong.title.length > 30 ? 'animate-scroll-text' : ''
-            }`}>
+            <p className="text-sm font-medium text-foreground whitespace-nowrap animate-scroll-seamless">
               {currentSong.title}
             </p>
           </div>

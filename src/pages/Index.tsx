@@ -56,21 +56,18 @@ const Index: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Dynamic waveform bars
+  // Dynamic waveform bars for homepage
   const WaveformBar = ({ index }: { index: number }) => {
-    const delay = index * 0.1;
-    const height = Math.random() * 40 + 10;
+    const delay = index * 0.05;
+    const height = Math.random() * 120 + 20; // Larger height range for homepage
     
     return (
       <div
-        className={`bg-gradient-primary rounded-full transition-all duration-300 ${
-          isPlaying ? 'animate-pulse shadow-glow' : ''
-        }`}
+        className={`bg-gradient-primary rounded-full transition-all duration-500 animate-pulse shadow-glow flex-1 max-w-2`}
         style={{
-          width: '4px',
           height: `${height}px`,
           animationDelay: `${delay}s`,
-          filter: isPlaying ? 'drop-shadow(0 0 8px hsl(var(--primary)))' : 'none'
+          filter: 'drop-shadow(0 0 8px hsl(var(--primary)))'
         }}
       />
     );
@@ -82,12 +79,10 @@ const Index: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-8">
           <div className="text-center space-y-6">
-            <div className="w-full h-64 mx-auto flex items-center justify-center relative">
-              <img 
-                src={waveformBackground} 
-                alt="House Share Waveform" 
-                className="w-full h-full object-cover opacity-80"
-              />
+            <div className="w-full h-64 mx-auto flex items-center justify-center gap-1 px-8">
+              {Array.from({ length: 60 }, (_, index) => (
+                <WaveformBar key={index} index={index} />
+              ))}
             </div>
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">House Share</h1>

@@ -11,7 +11,7 @@ export const MiniPlayer: React.FC = () => {
   if (!currentSong || location.pathname === '/now-playing') return null;
 
   const handleNavigateToPlayer = () => {
-    navigate('/now-playing');
+    navigate('/now-playing', { state: { from: location.pathname } });
   };
 
   return (

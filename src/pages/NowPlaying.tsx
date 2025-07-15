@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Music, Repeat, ArrowLeft, GripVertical } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
 import { Button } from '@/components/ui/button';
 
 export const NowPlaying: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentSong, isPlaying, setIsPlaying, skipToNext, skipToPrevious, playContext, reorderQueue } = useMusicContext();
   const [showQueue, setShowQueue] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -51,6 +52,26 @@ export const NowPlaying: React.FC = () => {
 
   const handleDragEnd = () => {
     setDraggedIndex(null);
+  };
+
+  const handleBackNavigation = () => {
+    // Check if there's a state indicating where we came from
+    const previousPath = location.state?.from;
+    
+    if (previousPath) {
+      navigate(previousPath);
+    } else if (playContext) {
+      // If we have a play context, go to the appropriate page
+      if (playContext.type === 'playlist') {
+        // Try to find the playlist ID from the current context
+        navigate('/library'); // Fallback to library if no playlist ID
+      } else {
+        navigate('/library');
+      }
+    } else {
+      // Default fallback
+      navigate('/');
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -112,7 +133,7 @@ export const NowPlaying: React.FC = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate(-1)}
+                onClick={handleBackNavigation}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="w-5 h-5" />

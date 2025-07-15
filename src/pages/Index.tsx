@@ -56,20 +56,22 @@ const Index: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Dynamic waveform bars for homepage
+  // Simple visible waveform bars
   const WaveformBar = ({ index }: { index: number }) => {
-    const delay = index * 0.3;
-    const height = Math.random() * 160 + 40;
+    const heights = [20, 40, 60, 80, 100, 120, 90, 70, 50, 30, 60, 110, 85, 45, 75, 95, 65, 35, 55, 105, 
+                    80, 40, 70, 120, 60, 30, 90, 110, 50, 80, 100, 45, 75, 95, 65, 35, 85, 115, 55, 25];
+    const height = heights[index % heights.length];
     
     return (
       <div
-        className="rounded-full transition-all duration-[3000ms] animate-pulse"
         style={{
-          width: '8px',
+          width: '6px',
           height: `${height}px`,
           backgroundColor: '#ff6b35',
-          animationDelay: `${delay}s`,
-          boxShadow: '0 0 8px #ff6b35'
+          borderRadius: '3px',
+          margin: '0 1px',
+          animation: `pulse 2s ease-in-out infinite`,
+          animationDelay: `${index * 0.1}s`
         }}
       />
     );
@@ -81,7 +83,7 @@ const Index: React.FC = () => {
         {/* Header */}
         <div className="px-6 py-8">
           <div className="text-center space-y-6">
-            <div className="w-full h-80 mx-auto flex items-center justify-center gap-2 px-8">
+            <div className="w-full h-80 mx-auto flex items-end justify-center px-8" style={{ backgroundColor: 'transparent' }}>
               {Array.from({ length: 40 }, (_, index) => (
                 <WaveformBar key={index} index={index} />
               ))}

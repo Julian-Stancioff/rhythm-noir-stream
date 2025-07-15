@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { SongCard } from '@/components/SongCard';
-import { Music, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Music, Plus, Check, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface Song {
   id: string;
@@ -25,9 +26,16 @@ const mockSongs: Song[] = [
 ];
 
 export const Library: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedSongs, setSelectedSongs] = useState<Set<string>>(new Set());
+  
+  const isSelectionMode = location.state?.selectionMode || false;
+  const playlistId = location.state?.playlistId;
+  const playlistName = location.state?.playlistName;
 
   const filteredSongs = useMemo(() => {
     if (!searchQuery.trim()) return mockSongs;
@@ -48,10 +56,40 @@ export const Library: React.FC = () => {
   };
 
   const handleSongSelect = (song: Song) => {
-    setCurrentSong(song);
-    // Navigate to homepage with song data
-    const songData = encodeURIComponent(JSON.stringify(song));
-    window.location.href = `/?song=${songData}`;
+    if (isSelectionMode) {
+      const newSelected = new Set(selectedSongs);
+      if (newSelected.has(song.id)) {
+        newSelected.delete(song.id);
+      } else {
+        newSelected.add(song.id);
+      }
+      setSelectedSongs(newSelected);
+    } else {
+      setCurrentSong(song);
+      // Navigate to homepage with song data
+      const songData = encodeURIComponent(JSON.stringify(song));
+      navigate(`/?song=${songData}`);
+    }
+  };
+
+  const handleAddToPlaylist = () => {
+    const songsToAdd = mockSongs.filter(song => selectedSongs.has(song.id));
+    if (playlistId === 'new') {
+      navigate('/playlist/new', { 
+        state: { 
+          addedSongs: songsToAdd,
+          playlistName: playlistName 
+        } 
+      });
+    } else {
+      navigate(`/playlist/${playlistId}`, { 
+        state: { addedSongs: songsToAdd } 
+      });
+    }
+  };
+
+  const handleCancelSelection = () => {
+    navigate(-1);
   };
 
   return (
@@ -59,22 +97,47 @@ export const Library: React.FC = () => {
       {/* Header */}
       <div className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border z-40">
         <div className="p-6 pb-4">
+          {isSelectionMode && (
+            <div className="flex items-center justify-between mb-4">
+              <Button
+                variant="ghost"
+                onClick={handleCancelSelection}
+                className="flex items-center gap-2 text-muted-foreground"
+              >
+                <X className="w-4 h-4" />
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddToPlaylist}
+                disabled={selectedSongs.size === 0}
+                className="flex items-center gap-2 bg-gradient-primary text-primary-foreground"
+              >
+                <Check className="w-4 h-4" />
+                Add to Playlist ({selectedSongs.size})
+              </Button>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Your Library</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                {isSelectionMode ? 'Select Songs' : 'Your Library'}
+              </h1>
               <p className="text-muted-foreground">
                 {mockSongs.length} songs • {Math.floor(mockSongs.reduce((acc, song) => acc + song.duration, 0) / 60)} minutes
               </p>
             </div>
             
-            <Link
-              to="/upload"
-              className="p-3 bg-gradient-primary text-primary-foreground rounded-xl 
-                       shadow-glow hover:shadow-glow hover:scale-105 
-                       transition-all duration-200"
-            >
-              <Plus className="w-6 h-6" />
-            </Link>
+            {!isSelectionMode && (
+              <Link
+                to="/upload"
+                className="p-3 bg-gradient-primary text-primary-foreground rounded-xl 
+                         shadow-glow hover:shadow-glow hover:scale-105 
+                         transition-all duration-200"
+              >
+                <Plus className="w-6 h-6" />
+              </Link>
+            )}
           </div>
           
           <SearchBar
@@ -90,14 +153,27 @@ export const Library: React.FC = () => {
         {filteredSongs.length > 0 ? (
           <div className="space-y-2">
             {filteredSongs.map((song) => (
-              <SongCard
+              <div
                 key={song.id}
-                song={song}
-                isPlaying={isPlaying}
-                isCurrentSong={currentSong?.id === song.id}
-                onPlayPause={handlePlayPause}
-                onSelect={handleSongSelect}
-              />
+                className={`relative ${
+                  isSelectionMode && selectedSongs.has(song.id) 
+                    ? 'ring-2 ring-primary bg-primary/5 rounded-lg' 
+                    : ''
+                }`}
+              >
+                {isSelectionMode && selectedSongs.has(song.id) && (
+                  <div className="absolute top-2 right-2 z-10 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                )}
+                <SongCard
+                  song={song}
+                  isPlaying={isPlaying}
+                  isCurrentSong={currentSong?.id === song.id}
+                  onPlayPause={handlePlayPause}
+                  onSelect={handleSongSelect}
+                />
+              </div>
             ))}
           </div>
         ) : (

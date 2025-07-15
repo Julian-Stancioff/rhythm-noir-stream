@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import { Library } from "./pages/Library";
 import { NowPlaying } from "./pages/NowPlaying";
 import { Upload } from "./pages/Upload";
+import { PlaylistEditor } from "./pages/PlaylistEditor";
 import { BottomNavigation } from "./components/BottomNavigation";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,8 @@ const App = () => (
             <Route path="/library" element={<Library />} />
             <Route path="/now-playing" element={<NowPlaying />} />
             <Route path="/upload" element={<Upload />} />
+            <Route path="/playlist/new" element={<PlaylistEditor />} />
+            <Route path="/playlist/:playlistId" element={<PlaylistEditor />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNavigation />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Plus, Clock, Music, Shuffle, Repeat } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface Song {
   id: string;
@@ -13,34 +13,19 @@ interface Song {
 interface Playlist {
   id: string;
   name: string;
-  songCount: number;
-  duration: number;
   songs: Song[];
+  totalDuration: number;
 }
 
 // Mock playlists data
-const mockPlaylists: Playlist[] = [
-  {
-    id: '1',
-    name: 'Chill Vibes',
-    songCount: 12,
-    duration: 2847,
-    songs: []
-  },
-  {
-    id: '2',
-    name: 'Electronic Mix',
-    songCount: 8,
-    duration: 1923,
-    songs: []
-  }
-];
+const mockPlaylists: Playlist[] = [];
 
 const Index: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playlists, setPlaylists] = useState(mockPlaylists);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   // Check if a song was passed from the library
   useEffect(() => {
@@ -63,15 +48,21 @@ const Index: React.FC = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const createNewPlaylist = () => {
-    const newPlaylist: Playlist = {
-      id: String(playlists.length + 1),
-      name: `My Playlist ${playlists.length + 1}`,
-      songCount: 0,
-      duration: 0,
-      songs: []
-    };
-    setPlaylists([...playlists, newPlaylist]);
+  useEffect(() => {
+    // Load playlists from localStorage
+    const savedPlaylists = localStorage.getItem('playlists');
+    if (savedPlaylists) {
+      setPlaylists(JSON.parse(savedPlaylists));
+    }
+  }, []);
+
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
   };
 
   const formatTime = (seconds: number) => {
@@ -198,20 +189,21 @@ const Index: React.FC = () => {
         <div className="px-6 py-4 border-t border-border">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-foreground">Playlists</h3>
-            <button
-              onClick={createNewPlaylist}
+            <Link
+              to="/playlist/new"
               className="p-2 bg-gradient-primary text-primary-foreground rounded-lg shadow-glow hover:scale-105 transition-all duration-200"
             >
               <Plus className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
           
           {playlists.length > 0 ? (
             <div className="space-y-3">
               {playlists.map((playlist) => (
-                <div
+                <Link
                   key={playlist.id}
-                  className="p-4 bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
+                  to={`/playlist/${playlist.id}`}
+                  className="block p-4 bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-200"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center">
@@ -220,11 +212,11 @@ const Index: React.FC = () => {
                     <div className="flex-1">
                       <h4 className="font-medium text-foreground">{playlist.name}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {playlist.songCount} songs • {Math.floor(playlist.duration / 60)} min
+                        {playlist.songs.length} songs • {formatDuration(playlist.totalDuration)}
                       </p>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
@@ -233,12 +225,12 @@ const Index: React.FC = () => {
                 <Music className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground mb-4">No playlists yet</p>
-              <button
-                onClick={createNewPlaylist}
-                className="px-4 py-2 bg-gradient-primary text-primary-foreground rounded-lg shadow-glow hover:scale-105 transition-all duration-200 font-medium"
+              <Link
+                to="/playlist/new"
+                className="inline-block px-4 py-2 bg-gradient-primary text-primary-foreground rounded-lg shadow-glow hover:scale-105 transition-all duration-200 font-medium"
               >
                 Create Your First Playlist
-              </button>
+              </Link>
             </div>
           )}
         </div>

@@ -82,14 +82,10 @@ export const NowPlaying: React.FC = () => {
         </div>
 
         {/* Now Playing Section */}
-        <div className="px-6 py-8">
+        <div className="px-6 py-4">
           <div className="space-y-8">
             {/* Song Info */}
             <div className="text-center space-y-4">
-              <div className="w-64 h-64 mx-auto bg-gradient-subtle rounded-2xl shadow-elegant flex items-center justify-center">
-                <Music className="w-24 h-24 text-muted-foreground" />
-              </div>
-              
               {/* Scrolling Title */}
               <div className="overflow-hidden w-full">
                 <h1 className={`text-2xl font-bold text-foreground whitespace-nowrap ${
@@ -97,7 +93,6 @@ export const NowPlaying: React.FC = () => {
                 }`}>
                   {currentSong.title}
                 </h1>
-                <p className="text-lg text-muted-foreground mt-1">{currentSong.artist}</p>
               </div>
             </div>
 

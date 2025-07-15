@@ -1,13 +1,14 @@
 import React from 'react';
 import { Play, Pause } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
 
 export const MiniPlayer: React.FC = () => {
   const { currentSong, isPlaying, playPause } = useMusicContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  if (!currentSong) return null;
+  if (!currentSong || location.pathname === '/now-playing') return null;
 
   const handleNavigateToPlayer = () => {
     navigate('/now-playing');

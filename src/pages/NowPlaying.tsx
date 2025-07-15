@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, SkipBack, SkipForward, Clock, Music, Shuffle, Repeat, ArrowLeft } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Music, Repeat, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
 import { Button } from '@/components/ui/button';
@@ -119,9 +119,6 @@ export const NowPlaying: React.FC = () => {
 
             {/* Controls */}
             <div className="flex items-center justify-center space-x-6">
-              <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
-                <Shuffle className="w-6 h-6" />
-              </button>
               <button 
                 onClick={skipToPrevious}
                 className="p-3 text-foreground hover:scale-105 transition-transform"
@@ -140,15 +137,12 @@ export const NowPlaying: React.FC = () => {
               >
                 <SkipForward className="w-6 h-6" />
               </button>
-              <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
-                <Repeat className="w-6 h-6" />
-              </button>
             </div>
 
-            {/* Queue Button */}
+            {/* Repeat Button */}
             <div className="flex justify-center">
               <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-                <Clock className="w-5 h-5" />
+                <Repeat className="w-5 h-5" />
               </button>
             </div>
           </div>

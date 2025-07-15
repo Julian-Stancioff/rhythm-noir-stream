@@ -15,6 +15,7 @@ interface SongCardProps {
   isCurrentSong?: boolean;
   onPlayPause: (song: Song) => void;
   onSelect: (song: Song) => void;
+  onMoreOptions?: (song: Song) => void;
 }
 
 export const SongCard: React.FC<SongCardProps> = ({
@@ -22,7 +23,8 @@ export const SongCard: React.FC<SongCardProps> = ({
   isPlaying = false,
   isCurrentSong = false,
   onPlayPause,
-  onSelect
+  onSelect,
+  onMoreOptions
 }) => {
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -32,12 +34,11 @@ export const SongCard: React.FC<SongCardProps> = ({
 
   return (
     <div 
-      className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ease-out cursor-pointer
+      className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ease-out
                 ${isCurrentSong 
                   ? 'bg-gradient-card border border-primary/20 shadow-glow' 
                   : 'hover:bg-card/50'
                 }`}
-      onClick={() => onSelect(song)}
     >
       {/* Artwork / Play Button */}
       <div className="relative flex-shrink-0">
@@ -76,26 +77,34 @@ export const SongCard: React.FC<SongCardProps> = ({
       </div>
 
       {/* Song Info */}
-      <div className="flex-1 min-w-0">
+      <div 
+        className="flex-1 min-w-0 cursor-pointer"
+        onClick={() => onMoreOptions ? onMoreOptions(song) : onSelect(song)}
+      >
         <h3 className={`font-semibold truncate transition-colors duration-200
                       ${isCurrentSong ? 'text-primary' : 'text-foreground'}`}>
           {song.title}
         </h3>
-        <p className="text-sm text-muted-foreground truncate">
-          {song.artist}
-        </p>
       </div>
 
-      {/* Duration */}
-      <div className="flex items-center gap-3">
+      {/* Controls - Always visible on mobile */}
+      <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground font-medium">
           {formatDuration(song.duration)}
         </span>
         
-        <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground 
-                         hover:bg-muted/50 transition-all duration-200 opacity-0 group-hover:opacity-100">
-          <MoreHorizontal className="w-4 h-4" />
-        </button>
+        {onMoreOptions && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onMoreOptions(song);
+            }}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground 
+                     hover:bg-muted/50 transition-all duration-200"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Playing indicator */}

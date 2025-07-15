@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { SongCard } from '@/components/SongCard';
+import { SongOptionsPopup } from '@/components/SongOptionsPopup';
+import { PlaylistSelectorPopup } from '@/components/PlaylistSelectorPopup';
 import { Music, Plus, Check, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -32,10 +34,21 @@ export const Library: React.FC = () => {
   const { currentSong, isPlaying, setCurrentSong, setIsPlaying } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSongs, setSelectedSongs] = useState<Set<string>>(new Set());
+  const [selectedSongForOptions, setSelectedSongForOptions] = useState<Song | null>(null);
+  const [showPlaylistSelector, setShowPlaylistSelector] = useState(false);
+  const [playlists, setPlaylists] = useState<any[]>([]);
   
   const isSelectionMode = location.state?.selectionMode || false;
   const playlistId = location.state?.playlistId;
   const playlistName = location.state?.playlistName;
+
+  // Load playlists
+  React.useEffect(() => {
+    const savedPlaylists = localStorage.getItem('playlists');
+    if (savedPlaylists) {
+      setPlaylists(JSON.parse(savedPlaylists));
+    }
+  }, []);
 
   const filteredSongs = useMemo(() => {
     if (!searchQuery.trim()) return mockSongs;
@@ -90,6 +103,40 @@ export const Library: React.FC = () => {
 
   const handleCancelSelection = () => {
     navigate(-1);
+  };
+
+  const handleSongOptions = (song: Song) => {
+    setSelectedSongForOptions(song);
+  };
+
+  const handleAddSongToPlaylist = () => {
+    setShowPlaylistSelector(true);
+  };
+
+  const handleDeleteSong = () => {
+    // For now, just close the popup since we're working with mock data
+    setSelectedSongForOptions(null);
+  };
+
+  const handleSelectPlaylist = (playlistId: string) => {
+    if (selectedSongForOptions) {
+      // Add song to playlist logic here
+      const savedPlaylists = JSON.parse(localStorage.getItem('playlists') || '[]');
+      const playlistIndex = savedPlaylists.findIndex((p: any) => p.id === playlistId);
+      
+      if (playlistIndex !== -1) {
+        const songExists = savedPlaylists[playlistIndex].songs.some((s: any) => s.id === selectedSongForOptions.id);
+        if (!songExists) {
+          savedPlaylists[playlistIndex].songs.push(selectedSongForOptions);
+          savedPlaylists[playlistIndex].totalDuration += selectedSongForOptions.duration;
+          localStorage.setItem('playlists', JSON.stringify(savedPlaylists));
+          setPlaylists(savedPlaylists);
+        }
+      }
+    }
+    
+    setShowPlaylistSelector(false);
+    setSelectedSongForOptions(null);
   };
 
   return (
@@ -172,6 +219,7 @@ export const Library: React.FC = () => {
                   isCurrentSong={currentSong?.id === song.id}
                   onPlayPause={handlePlayPause}
                   onSelect={handleSongSelect}
+                  onMoreOptions={!isSelectionMode ? handleSongOptions : undefined}
                 />
               </div>
             ))}
@@ -203,6 +251,27 @@ export const Library: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Popups */}
+      {selectedSongForOptions && (
+        <SongOptionsPopup
+          song={selectedSongForOptions}
+          isOpen={!!selectedSongForOptions}
+          onClose={() => setSelectedSongForOptions(null)}
+          onAddToPlaylist={handleAddSongToPlaylist}
+          onDelete={handleDeleteSong}
+        />
+      )}
+
+      {selectedSongForOptions && (
+        <PlaylistSelectorPopup
+          song={selectedSongForOptions}
+          isOpen={showPlaylistSelector}
+          onClose={() => setShowPlaylistSelector(false)}
+          onSelectPlaylist={handleSelectPlaylist}
+          playlists={playlists}
+        />
+      )}
     </div>
   );
 };

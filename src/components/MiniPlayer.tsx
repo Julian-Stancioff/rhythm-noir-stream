@@ -17,10 +17,7 @@ export const MiniPlayer: React.FC = () => {
   return (
     <div className="fixed bottom-20 left-0 right-0 z-50 safe-area-inset-bottom">
       <div className="mx-4 mb-2">
-        <div className="bg-card/95 backdrop-blur-lg border border-border rounded-2xl shadow-elegant overflow-hidden">
-          {/* Animated waveform bar at top */}
-          <div className="h-1 bg-gradient-primary opacity-60 animate-pulse"></div>
-          
+        <div className="bg-card/95 backdrop-blur-lg border-2 border-primary/20 rounded-2xl shadow-elegant overflow-hidden">
           <div className="flex items-center px-4 py-3 max-w-screen-sm mx-auto">
             {/* Song Info - Clickable area */}
             <div 
@@ -28,11 +25,9 @@ export const MiniPlayer: React.FC = () => {
               onClick={handleNavigateToPlayer}
             >
               <div className="overflow-hidden">
+                <p className="text-xs text-muted-foreground mb-1">Now Playing</p>
                 <p className="text-sm font-medium text-foreground whitespace-nowrap animate-scroll-seamless">
                   {currentSong.title}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {currentSong.artist}
                 </p>
               </div>
             </div>
@@ -78,7 +73,7 @@ export const MiniPlayer: React.FC = () => {
           {/* Progress indicator */}
           <div className="h-1 bg-muted/30">
             <div 
-              className="h-full bg-gradient-primary transition-all duration-300 rounded-full"
+              className="h-full bg-gradient-primary transition-all duration-300"
               style={{ width: isPlaying ? '35%' : '0%' }}
             />
           </div>

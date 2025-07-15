@@ -11,10 +11,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'home', label: 'Home', icon: Home, path: '/' },
-  { id: 'search', label: 'Search', icon: Search, path: '/search' },
   { id: 'upload', label: 'Upload', icon: Upload, path: '/upload' },
   { id: 'library', label: 'Library', icon: Library, path: '/library' },
-  { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
 ];
 
 export const BottomNavigation: React.FC = () => {

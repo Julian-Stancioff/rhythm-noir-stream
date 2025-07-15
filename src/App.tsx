@@ -24,8 +24,6 @@ const App = () => (
             <Route path="/library" element={<Library />} />
             <Route path="/now-playing" element={<NowPlaying />} />
             <Route path="/upload" element={<Upload />} />
-            <Route path="/search" element={<Library />} />
-            <Route path="/profile" element={<Library />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNavigation />

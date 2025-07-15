@@ -1,129 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Timer } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { SearchBar } from '@/components/SearchBar';
+import { SongCard } from '@/components/SongCard';
+import { Music, Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const Index = () => {
+interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  duration: number;
+  artwork?: string;
+}
+
+// Mock data for demonstration
+const mockSongs: Song[] = [
+  { id: '1', title: 'Midnight Dreams', artist: 'Luna Waves', duration: 245 },
+  { id: '2', title: 'Electric Pulse', artist: 'Neon City', duration: 198 },
+  { id: '3', title: 'Ocean Breeze', artist: 'Coastal Vibes', duration: 312 },
+  { id: '4', title: 'Urban Nights', artist: 'City Lights', duration: 267 },
+  { id: '5', title: 'Crystal Waters', artist: 'Ambient Waves', duration: 389 },
+  { id: '6', title: 'Solar Flare', artist: 'Space Echo', duration: 201 },
+  { id: '7', title: 'Forest Walk', artist: 'Nature Sounds', duration: 445 },
+  { id: '8', title: 'Digital Love', artist: 'Cyber Hearts', duration: 234 },
+];
+
+const Index: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(42);
-  const [duration] = useState(188);
-  const [waveformOffset, setWaveformOffset] = useState(0);
-  
-  // Generate more waveform bars for continuous scrolling
-  const [waveformBars] = useState(() => 
-    Array.from({ length: 80 }, () => Math.random() * 0.8 + 0.2)
-  );
-  
-  // Animate bars when playing
-  useEffect(() => {
-    if (!isPlaying) return;
-    
-    const timeInterval = setInterval(() => {
-      setCurrentTime(prev => prev < duration ? prev + 1 : 0);
-    }, 1000);
 
-    // Animate waveform scrolling
-    const waveformInterval = setInterval(() => {
-      setWaveformOffset(prev => (prev + 1) % waveformBars.length);
-    }, 100);
+  const filteredSongs = useMemo(() => {
+    if (!searchQuery.trim()) return mockSongs;
     
-    return () => {
-      clearInterval(timeInterval);
-      clearInterval(waveformInterval);
-    };
-  }, [isPlaying, duration, waveformBars.length]);
+    return mockSongs.filter(song =>
+      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  const handlePlayPause = (song: Song) => {
+    if (currentSong?.id === song.id) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setCurrentSong(song);
+      setIsPlaying(true);
+    }
   };
 
-  const progress = (currentTime / duration) * 100;
+  const handleSongSelect = (song: Song) => {
+    setCurrentSong(song);
+    // Navigate to now playing screen
+    window.location.href = '/now-playing';
+  };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Main Player Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
-        
-        {/* Song Title - Scrolling Animation */}
-        <div className="text-center mb-12 w-full max-w-sm overflow-hidden">
-          <div className="animate-[scroll-title_12s_linear_infinite]">
-            <h1 className="text-2xl font-semibold text-foreground whitespace-nowrap">
-              Deep House Groove
-            </h1>
-          </div>
-        </div>
-
-        {/* Dynamic Scrolling Waveform */}
-        <div className="w-full max-w-sm mb-8 overflow-hidden">
-          <div 
-            className="flex items-end justify-start gap-1 h-32 mb-4 transition-transform duration-75 ease-linear"
-            style={{
-              transform: `translateX(-${(waveformOffset * 6)}px)`,
-              width: `${waveformBars.length * 6}px`
-            }}
-          >
-            {[...waveformBars, ...waveformBars.slice(0, 20)].map((height, index) => {
-              const adjustedIndex = index % waveformBars.length;
-              const isActive = (adjustedIndex / waveformBars.length) * 100 <= progress;
-              const intensity = Math.sin(Date.now() * 0.01 + index * 0.3) * 0.5 + 0.5;
-              const glowIntensity = isPlaying && isActive ? intensity : 0;
-              
-              return (
-                <div
-                  key={`${adjustedIndex}-${Math.floor(index / waveformBars.length)}`}
-                  className={`w-1 rounded-full transition-all duration-150 ${
-                    isActive 
-                      ? 'bg-primary' 
-                      : 'bg-muted/60'
-                  }`}
-                  style={{
-                    height: `${height * 100}%`,
-                    boxShadow: isActive ? `0 0 ${8 + glowIntensity * 12}px hsl(var(--primary) / ${0.6 + glowIntensity * 0.4})` : 'none',
-                    filter: isActive ? `brightness(${1 + glowIntensity * 0.5})` : 'none'
-                  }}
-                />
-              );
-            })}
+    <div className="min-h-screen bg-gradient-background pb-20">
+      {/* Header */}
+      <div className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border z-40">
+        <div className="p-6 pb-4">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Your Library</h1>
+              <p className="text-muted-foreground">
+                {mockSongs.length} songs • {Math.floor(mockSongs.reduce((acc, song) => acc + song.duration, 0) / 60)} minutes
+              </p>
+            </div>
+            
+            <Link
+              to="/upload"
+              className="p-3 bg-gradient-primary text-primary-foreground rounded-xl 
+                       shadow-glow hover:shadow-glow hover:scale-105 
+                       transition-all duration-200"
+            >
+              <Plus className="w-6 h-6" />
+            </Link>
           </div>
           
-          {/* Time Display */}
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
-          </div>
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search your music..."
+          />
         </div>
+      </div>
 
-        {/* Playback Controls */}
-        <div className="flex items-center justify-center gap-8 mb-12">
-          <button className="p-3 rounded-xl text-foreground hover:bg-muted/50 transition-all duration-200">
-            <SkipBack className="w-6 h-6" fill="currentColor" />
-          </button>
-          
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="p-4 rounded-full bg-gradient-primary text-primary-foreground 
-                     shadow-glow hover:shadow-glow hover:scale-105 
-                     transition-all duration-200"
-          >
-            {isPlaying ? (
-              <Pause className="w-8 h-8" fill="currentColor" />
-            ) : (
-              <Play className="w-8 h-8 ml-1" fill="currentColor" />
+      {/* Content */}
+      <div className="p-6 pt-4">
+        {filteredSongs.length > 0 ? (
+          <div className="space-y-2">
+            {filteredSongs.map((song) => (
+              <SongCard
+                key={song.id}
+                song={song}
+                isPlaying={isPlaying}
+                isCurrentSong={currentSong?.id === song.id}
+                onPlayPause={handlePlayPause}
+                onSelect={handleSongSelect}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+              <Music className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              {searchQuery ? 'No songs found' : 'No music yet'}
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-sm">
+              {searchQuery 
+                ? `No songs match "${searchQuery}". Try a different search term.`
+                : 'Start building your music library by uploading your favorite tracks.'
+              }
+            </p>
+            {!searchQuery && (
+              <Link
+                to="/upload"
+                className="px-6 py-3 bg-gradient-primary text-primary-foreground rounded-xl 
+                         shadow-glow hover:shadow-glow hover:scale-105 
+                         transition-all duration-200 font-medium"
+              >
+                Upload Your First Song
+              </Link>
             )}
-          </button>
-          
-          <button className="p-3 rounded-xl text-foreground hover:bg-muted/50 transition-all duration-200">
-            <SkipForward className="w-6 h-6" fill="currentColor" />
-          </button>
-        </div>
-
-        {/* Queue Icon Button */}
-        <div className="w-full max-w-sm flex justify-end">
-          <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 
-                           transition-all duration-200">
-            <Timer className="w-4 h-4" />
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

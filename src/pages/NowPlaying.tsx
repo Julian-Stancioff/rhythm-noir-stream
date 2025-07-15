@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Music, Repeat, ArrowLeft } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Music, Repeat, ArrowLeft, GripVertical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicContext } from '../contexts/MusicContext';
 import { Button } from '@/components/ui/button';
 
 export const NowPlaying: React.FC = () => {
   const navigate = useNavigate();
-  const { currentSong, isPlaying, setIsPlaying, skipToNext, skipToPrevious, playContext } = useMusicContext();
+  const { currentSong, isPlaying, setIsPlaying, skipToNext, skipToPrevious, playContext, reorderQueue } = useMusicContext();
   const [showQueue, setShowQueue] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -23,6 +24,33 @@ export const NowPlaying: React.FC = () => {
     const currentIndex = playContext.currentIndex;
     const nextSongs = playContext.songs.slice(currentIndex + 1, currentIndex + 6);
     return nextSongs;
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || !playContext) return;
+    
+    const currentSongIndex = playContext.currentIndex;
+    const actualFromIndex = currentSongIndex + 1 + draggedIndex;
+    const actualToIndex = currentSongIndex + 1 + dropIndex;
+    
+    reorderQueue(actualFromIndex, actualToIndex);
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   const formatTime = (seconds: number) => {
@@ -168,7 +196,18 @@ export const NowPlaying: React.FC = () => {
                   {getUpcomingSongs().length > 0 ? (
                     <div className="space-y-2">
                       {getUpcomingSongs().map((song, index) => (
-                        <div key={song.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div 
+                          key={song.id} 
+                          className={`flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-grab active:cursor-grabbing ${
+                            draggedIndex === index ? 'opacity-50' : ''
+                          }`}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index)}
+                          onDragOver={handleDragOver}
+                          onDrop={(e) => handleDrop(e, index)}
+                          onDragEnd={handleDragEnd}
+                        >
+                          <GripVertical className="w-3 h-3 text-muted-foreground" />
                           <span className="text-xs text-muted-foreground w-4">{index + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{song.title}</p>

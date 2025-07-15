@@ -25,6 +25,7 @@ interface MusicContextType {
   skipToNext: () => void;
   skipToPrevious: () => void;
   playFromContext: (songs: Song[], index: number, type: 'playlist' | 'library') => void;
+  reorderQueue: (fromIndex: number, toIndex: number) => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -61,6 +62,26 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     setIsPlaying(true);
   };
 
+  const reorderQueue = (fromIndex: number, toIndex: number) => {
+    if (!playContext) return;
+    
+    const newSongs = [...playContext.songs];
+    const [movedSong] = newSongs.splice(fromIndex, 1);
+    newSongs.splice(toIndex, 0, movedSong);
+    
+    // Update indices if needed
+    let newCurrentIndex = playContext.currentIndex;
+    if (fromIndex <= playContext.currentIndex && toIndex > playContext.currentIndex) {
+      newCurrentIndex--;
+    } else if (fromIndex > playContext.currentIndex && toIndex <= playContext.currentIndex) {
+      newCurrentIndex++;
+    } else if (fromIndex === playContext.currentIndex) {
+      newCurrentIndex = toIndex;
+    }
+    
+    setPlayContext({ ...playContext, songs: newSongs, currentIndex: newCurrentIndex });
+  };
+
   const skipToPrevious = () => {
     if (!playContext || playContext.currentIndex <= 0) return;
     
@@ -92,6 +113,7 @@ export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
     skipToNext,
     skipToPrevious,
     playFromContext,
+    reorderQueue,
   };
 
   return (

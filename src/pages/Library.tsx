@@ -31,7 +31,7 @@ const mockSongs: Song[] = [
 export const Library: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentSong, isPlaying, setCurrentSong, setIsPlaying } = useMusicContext();
+  const { currentSong, isPlaying, setCurrentSong, setIsPlaying, playFromContext } = useMusicContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSongs, setSelectedSongs] = useState<Set<string>>(new Set());
   const [selectedSongForOptions, setSelectedSongForOptions] = useState<Song | null>(null);
@@ -78,10 +78,10 @@ export const Library: React.FC = () => {
       }
       setSelectedSongs(newSelected);
     } else {
-      setCurrentSong(song);
-      setIsPlaying(true);
-      // Navigate to now-playing
-      navigate('/now-playing');
+      const songIndex = filteredSongs.findIndex(s => s.id === song.id);
+      if (songIndex !== -1) {
+        playFromContext(filteredSongs, songIndex, 'library');
+      }
     }
   };
 

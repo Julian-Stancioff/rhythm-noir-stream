@@ -25,7 +25,7 @@ export const PlaylistEditor: React.FC = () => {
   const navigate = useNavigate();
   const { playlistId } = useParams();
   const location = useLocation();
-  const { currentSong, isPlaying, setCurrentSong, setIsPlaying } = useMusicContext();
+  const { currentSong, isPlaying, setCurrentSong, setIsPlaying, playFromContext } = useMusicContext();
   const isNewPlaylist = !playlistId;
   
   const [playlistName, setPlaylistName] = useState('');
@@ -104,8 +104,7 @@ export const PlaylistEditor: React.FC = () => {
 
   const handlePlayPlaylist = () => {
     if (playlist && playlist.songs.length > 0) {
-      setCurrentSong(playlist.songs[0]);
-      setIsPlaying(true);
+      playFromContext(playlist.songs, 0, 'playlist');
     }
   };
 
@@ -119,10 +118,12 @@ export const PlaylistEditor: React.FC = () => {
   };
 
   const handleSongSelect = (song: Song) => {
-    setCurrentSong(song);
-    setIsPlaying(true);
-    // Navigate to now-playing
-    navigate('/now-playing');
+    if (playlist) {
+      const songIndex = playlist.songs.findIndex(s => s.id === song.id);
+      if (songIndex !== -1) {
+        playFromContext(playlist.songs, songIndex, 'playlist');
+      }
+    }
   };
 
   const formatDuration = (seconds: number) => {

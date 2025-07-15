@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export const NowPlaying: React.FC = () => {
   const navigate = useNavigate();
-  const { currentSong, isPlaying, setIsPlaying } = useMusicContext();
+  const { currentSong, isPlaying, setIsPlaying, skipToNext, skipToPrevious } = useMusicContext();
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -122,7 +122,10 @@ export const NowPlaying: React.FC = () => {
               <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">
                 <Shuffle className="w-6 h-6" />
               </button>
-              <button className="p-3 text-foreground hover:scale-105 transition-transform">
+              <button 
+                onClick={skipToPrevious}
+                className="p-3 text-foreground hover:scale-105 transition-transform"
+              >
                 <SkipBack className="w-6 h-6" />
               </button>
               <button
@@ -131,7 +134,10 @@ export const NowPlaying: React.FC = () => {
               >
                 {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
               </button>
-              <button className="p-3 text-foreground hover:scale-105 transition-transform">
+              <button 
+                onClick={skipToNext}
+                className="p-3 text-foreground hover:scale-105 transition-transform"
+              >
                 <SkipForward className="w-6 h-6" />
               </button>
               <button className="p-3 text-muted-foreground hover:text-foreground transition-colors">

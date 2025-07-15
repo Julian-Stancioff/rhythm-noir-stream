@@ -8,12 +8,23 @@ interface Song {
   artwork?: string;
 }
 
+interface PlayContext {
+  type: 'playlist' | 'library';
+  songs: Song[];
+  currentIndex: number;
+}
+
 interface MusicContextType {
   currentSong: Song | null;
   isPlaying: boolean;
+  playContext: PlayContext | null;
   setCurrentSong: (song: Song | null) => void;
   setIsPlaying: (playing: boolean) => void;
   playPause: () => void;
+  setPlayContext: (context: PlayContext | null) => void;
+  skipToNext: () => void;
+  skipToPrevious: () => void;
+  playFromContext: (songs: Song[], index: number, type: 'playlist' | 'library') => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -33,17 +44,54 @@ interface MusicProviderProps {
 export const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playContext, setPlayContext] = useState<PlayContext | null>(null);
 
   const playPause = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const skipToNext = () => {
+    if (!playContext || playContext.currentIndex >= playContext.songs.length - 1) return;
+    
+    const nextIndex = playContext.currentIndex + 1;
+    const nextSong = playContext.songs[nextIndex];
+    
+    setCurrentSong(nextSong);
+    setPlayContext({ ...playContext, currentIndex: nextIndex });
+    setIsPlaying(true);
+  };
+
+  const skipToPrevious = () => {
+    if (!playContext || playContext.currentIndex <= 0) return;
+    
+    const prevIndex = playContext.currentIndex - 1;
+    const prevSong = playContext.songs[prevIndex];
+    
+    setCurrentSong(prevSong);
+    setPlayContext({ ...playContext, currentIndex: prevIndex });
+    setIsPlaying(true);
+  };
+
+  const playFromContext = (songs: Song[], index: number, type: 'playlist' | 'library') => {
+    const song = songs[index];
+    if (!song) return;
+    
+    setCurrentSong(song);
+    setPlayContext({ type, songs, currentIndex: index });
+    setIsPlaying(true);
+  };
+
   const value: MusicContextType = {
     currentSong,
     isPlaying,
+    playContext,
     setCurrentSong,
     setIsPlaying,
     playPause,
+    setPlayContext,
+    skipToNext,
+    skipToPrevious,
+    playFromContext,
   };
 
   return (

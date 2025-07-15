@@ -153,7 +153,7 @@
 
   @keyframes scroll-seamless {
     0% { transform: translateX(100%); }
-    100% { transform: translateX(-120%); }
+    100% { transform: translateX(-105%); }
   }
 
   .animate-scroll-text {
@@ -161,7 +161,7 @@
   }
 
   .animate-scroll-seamless {
-    animation: scroll-seamless 8s linear infinite;
+    animation: scroll-seamless 6s linear infinite;
   }
 
   /* Gradient utilities */
